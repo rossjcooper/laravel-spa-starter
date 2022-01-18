@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,6 +23,7 @@ Route::post('login', [LoginController::class, 'login']);
 Route::group(['middleware' => ['auth:sanctum'],], function () {
 	Route::get('profile', [ProfileController::class, 'profile']);
 	Route::post('profile', [ProfileController::class, 'update']);
+	Route::post('changePassword', [PasswordController::class, 'changePassword']);
 	Route::post('logout', [LogoutController::class, 'logout']);
 
 });
