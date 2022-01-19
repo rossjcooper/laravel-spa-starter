@@ -10,9 +10,9 @@ use Illuminate\Support\Facades\Auth;
 class LogoutController extends Controller
 {
     public function logout(Request $request): Response
-	{
-		Auth::guard('web')->logout();
+    {
+        Auth::guard('web')->logout();
 
-		return response([], Response::HTTP_NO_CONTENT);
-	}
+        return response([], Response::HTTP_NO_CONTENT);
+    }
 }

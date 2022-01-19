@@ -23,11 +23,11 @@ class ChangePasswordRequest extends FormRequest
      */
     public function rules()
     {
-		$passwordRules = [
-			'required',
-			'min:8',
-			'max:32',
-		];
+        $passwordRules = [
+            'required',
+            'min:8',
+            'max:32',
+        ];
         return [
             'currentPassword' => $passwordRules,
             'newPassword' => $passwordRules,
