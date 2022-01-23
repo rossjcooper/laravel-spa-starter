@@ -23,7 +23,7 @@ class WelcomeUserNotification extends Notification
     public function __construct(User $user, $password)
     {
         $this->user = $user;
-        $this->password;
+        $this->password = $password;
     }
 
     /**
@@ -45,16 +45,17 @@ class WelcomeUserNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        $message = (new MailMessage())
-            ->line(sprintf('Welcome %s, to your new %s account.', $this->user->name, config('app.name')));
+        $appName = config('app.name');
+        $message = (new MailMessage())->subject("Welcome to $appName")
+            ->greeting("Hi {$notifiable->name},")
+            ->line(sprintf("Welcome, to your new $appName account."));
 
         if ($this->password) {
             $message->line('Your password is: '.$this->password);
             $message->line('We recommend you change this once you have logged in.');
         }
 
-        $message->action('Login Here', config('app.frontend_url') . '/login')
-            ->line('Thank you for using our application!');
+        $message->action('Login Here', config('app.frontend_url') . '/login');
 
         return $message;
     }

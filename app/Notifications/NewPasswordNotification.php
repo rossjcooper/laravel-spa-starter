@@ -46,7 +46,8 @@ class NewPasswordNotification extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage())
-            ->line("Hi {$this->user->name},")
+            ->subject('Your Password Has Changed')
+            ->greeting("Hi {$this->user->name},")
             ->line('We\'re emailing to let you know your password has changed.')
             ->line('Your new password is: ' . $this->password);
     }
