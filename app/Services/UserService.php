@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Exceptions\IncorrectPasswordException;
 use App\Models\User;
+use App\Notifications\NewPasswordNotification;
+use App\Notifications\WelcomeUserNotification;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
@@ -11,12 +13,36 @@ use Illuminate\Database\Eloquent\Builder;
 
 class UserService
 {
-    public function updateUser(User $user, array $data): User
+    public function createUser(array $data, bool $emailPassword = false): User
     {
-        $user->fill($data);
+        $password = $data['password'];
+        $user = new User($data);
+        $this->setUserPassword($user, $password);
         $user->save();
 
+        $user->notify(new WelcomeUserNotification($user, $emailPassword ? $password : null));
+
         return $user;
+    }
+
+    public function updateUser(User $user, array $data, bool $emailPassword = false): User
+    {
+        $user->fill($data);
+        if (isset($data['password']) && $data['password']) {
+            $this->setUserPassword($user, $data['password']);
+        }
+        $user->save();
+        if (isset($data['password']) && $data['password'] && $emailPassword) {
+            $user->notify(new NewPasswordNotification($user, $data['password']));
+        }
+
+
+        return $user;
+    }
+
+    public function deleteUser(User $user): void
+    {
+        $user->delete();
     }
 
     /**
@@ -27,7 +53,7 @@ class UserService
         if (!Hash::check($currentPassword, $user->password)) {
             throw new IncorrectPasswordException();
         }
-        $user->password = Hash::make($newPassword);
+        $this->setUserPassword($user, $newPassword);
         $user->save();
     }
 
@@ -43,10 +69,7 @@ class UserService
         return Password::reset(
             $credentials,
             function ($user, $password) {
-                $user->forceFill([
-                    'password' => Hash::make($password)
-                ])->setRememberToken(Str::random(60));
-
+                $this->setUserPassword($user, $password);
                 $user->save();
             }
         );
@@ -63,5 +86,11 @@ class UserService
         }
 
         return $query;
+    }
+
+    public function setUserPassword(User $user, string $password): void
+    {
+        $user->password = Hash::make($password);
+        $user->setRememberToken(Str::random(60));
     }
 }

@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class UserController extends Controller
 {
@@ -24,24 +27,16 @@ class UserController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreUserRequest $request, UserService $userService): Response
     {
-        //
+        $user = $userService->createUser($request->only(['name', 'email', 'password']), $request->get('emailPassword', false));
+
+        return response($user, Response::HTTP_CREATED);
     }
 
     /**
@@ -50,20 +45,9 @@ class UserController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function show(User $user)
+    public function show(User $user): Response
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(User $user)
-    {
-        //
+        return  response($user);
     }
 
     /**
@@ -73,9 +57,11 @@ class UserController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
+    public function update(UpdateUserRequest $request, User $user, UserService $userService)
     {
-        //
+        $user = $userService->updateUser($user, $request->only(['name', 'email', 'password']), $request->get('emailPassword', false));
+
+        return response($user);
     }
 
     /**
@@ -84,8 +70,10 @@ class UserController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function destroy(User $user)
+    public function destroy(User $user, UserService $userService): Response
     {
-        //
+        $userService->deleteUser($user);
+
+        return response('', Response::HTTP_NO_CONTENT);
     }
 }

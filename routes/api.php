@@ -31,5 +31,5 @@ Route::group(['middleware' => ['auth:sanctum'],], function () {
     Route::post('changePassword', [PasswordController::class, 'changePassword']);
     Route::post('logout', [LogoutController::class, 'logout']);
 
-    Route::get('users', [UserController::class, 'index']);
+    Route::resource('users', UserController::class)->except(['create', 'edit']);
 });
