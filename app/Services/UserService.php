@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Builder;
 
 class UserService
 {
@@ -49,5 +50,18 @@ class UserService
                 $user->save();
             }
         );
+    }
+
+    public function searchUsers($keyword = null): Builder
+    {
+        $query = User::query();
+        if ($keyword) {
+            $query->where(function ($query) use ($keyword) {
+                $query->where('name', 'like', '%' . $keyword . '%')
+                    ->orWhere('email', 'like', '%' . $keyword . '%');
+            });
+        }
+
+        return $query;
     }
 }

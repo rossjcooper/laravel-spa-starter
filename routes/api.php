@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\ProfileController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -29,4 +30,6 @@ Route::group(['middleware' => ['auth:sanctum'],], function () {
     Route::post('profile', [ProfileController::class, 'update']);
     Route::post('changePassword', [PasswordController::class, 'changePassword']);
     Route::post('logout', [LogoutController::class, 'logout']);
+
+    Route::get('users', [UserController::class, 'index']);
 });
